@@ -28,7 +28,7 @@ import httpx
 from bs4 import BeautifulSoup
 from fastapi import BackgroundTasks, Depends, FastAPI, Header, HTTPException, Request, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse, HTMLResponse, JSONResponse
+from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 from trafilatura import extract as trafilatura_extract
@@ -5232,6 +5232,62 @@ async def admin_db_import(file: UploadFile = File(...), _: sqlite3.Row = Depends
         "excluded": sorted(MIGRATION_EXCLUDE_TABLES - {"sqlite_sequence"}),
         "errors": errors,
     }
+
+
+@app.get("/api/v1/admin/db/export")
+def admin_db_export(_: sqlite3.Row = Depends(admin_user)):
+    """导出当前数据库的脱敏备份。
+
+    备份会复制除 llm_models（大模型连接配置 + API Key）之外的所有数据表，
+    确保导出的备份里不包含任何大模型连接信息或 Key，可放心用于迁移与环境迁移。
+    """
+    import tempfile
+
+    tmp = tempfile.NamedTemporaryFile(suffix=".db", delete=False)
+    tmp.close()
+    try:
+        dst = sqlite3.connect(tmp.name)
+        with db() as conn:
+            tables = [r[0] for r in conn.execute("SELECT name FROM sqlite_master WHERE type='table'")]
+            for t in tables:
+                # sqlite_sequence 是系统保留表，不可手动创建，交由 SQLite 自动维护
+                if t == "sqlite_sequence":
+                    continue
+                ddl = conn.execute(
+                    "SELECT sql FROM sqlite_master WHERE type='table' AND name=?", (t,)
+                ).fetchone()
+                if ddl and ddl[0]:
+                    dst.execute(ddl[0])
+                if t in MIGRATION_EXCLUDE_TABLES:
+                    # 保留空表结构，但跳过数据（不导出大模型配置）
+                    continue
+                cols = [d[1] for d in conn.execute(f'PRAGMA table_info("{t}")')]
+                rows = conn.execute(f'SELECT * FROM "{t}"').fetchall()
+                if rows and cols:
+                    quoted = ", ".join(f'"{c}"' for c in cols)
+                    ph = ", ".join("?" for _ in cols)
+                    dst.executemany(
+                        f'INSERT INTO "{t}" ({quoted}) VALUES ({ph})',
+                        [tuple(r) for r in rows],
+                    )
+        dst.commit()
+        dst.close()
+        with open(tmp.name, "rb") as f:
+            data = f.read()
+        os.unlink(tmp.name)
+        stamp = str(int(time.time()))
+        filename = f"insight-backup-{stamp}.db"
+        return Response(
+            data,
+            media_type="application/octet-stream",
+            headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+        )
+    except Exception:
+        try:
+            os.unlink(tmp.name)
+        except OSError:
+            pass
+        raise
 
 
 # ========================================

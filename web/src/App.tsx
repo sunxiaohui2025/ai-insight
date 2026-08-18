@@ -22,6 +22,7 @@ import ContentManagement from './pages/admin/ContentManagement';
 import ContentPublish from './pages/admin/ContentPublish';
 import SkillsPage from './pages/admin/Skills';
 import UserManagement from './pages/admin/UserManagement';
+import DataBackup from './pages/admin/DataBackup';
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user, loading } = useAuth();
@@ -128,6 +129,7 @@ function AppContent() {
           <Route path="skills" element={<SkillsPage />} />
           <Route path="models" element={<Models />} />
           <Route path="users" element={<UserManagement />} />
+          <Route path="data" element={<DataBackup />} />
         </Route>
       </Routes>
     </Router>

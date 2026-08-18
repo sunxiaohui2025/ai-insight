@@ -17,6 +17,7 @@ import CategoryIcon from '@mui/icons-material/Category';
 import PeopleIcon from '@mui/icons-material/People';
 import ModelTrainingIcon from '@mui/icons-material/ModelTraining';
 import ExtensionIcon from '@mui/icons-material/Extension';
+import BackupIcon from '@mui/icons-material/Backup';
 
 const drawerWidth = 260;
 
@@ -27,6 +28,7 @@ const menuItems = [
   { text: '模型管理', icon: <ModelTrainingIcon />, path: '/admin/models' },
   { text: 'Skill 管理', icon: <ExtensionIcon />, path: '/admin/skills' },
   { text: '用户管理', icon: <PeopleIcon />, path: '/admin/users' },
+  { text: '数据备份', icon: <BackupIcon />, path: '/admin/data' },
 ];
 
 const AdminLayout: React.FC = () => {

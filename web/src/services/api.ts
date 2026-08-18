@@ -481,4 +481,29 @@ export const modelApi = {
     api.post<ModelTestResult>('/api/v1/admin/models/test', data),
 };
 
+// 数据备份 / 导入（迁移）
+export interface DbImportResult {
+  ok: boolean;
+  imported: Record<string, number>;
+  excluded: string[];
+  errors: string[];
+}
+
+export const dataBackupApi = {
+  /** 导出脱敏备份（不含大模型连接配置/API Key），返回 .db 文件 Blob */
+  exportDb: async (): Promise<Blob> => {
+    const res = await api.get<Blob>('/api/v1/admin/db/export', { responseType: 'blob' });
+    return res.data;
+  },
+
+  /** 导入 .db 备份并合并进当前库（自动排除大模型连接配置） */
+  importDb: (file: File) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    return api.post<DbImportResult>('/api/v1/admin/db/import', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+  },
+};
+
 export default api;
