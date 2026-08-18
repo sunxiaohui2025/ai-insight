@@ -109,7 +109,7 @@ Token stored in Keychain with service `com.sun.insight.cloud`, account `token`.
 
 ## Server (`server/`)
 
-Single-file FastAPI app (`app/main.py`) + SQLite. No ORM — raw sqlite3. Admin console HTML is embedded as a raw Python string (`ADMIN_HTML`).
+Single-file FastAPI app (`app/main.py`) + SQLite. No ORM — raw sqlite3. The admin console and frontend are provided by the React web app (`web/`), not embedded in the server.
 
 ### Environment variables (`INSIGHT_*` prefix)
 
