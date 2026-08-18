@@ -1,0 +1,80 @@
+# 环境变量（包含敏感信息）
+.env
+.env.local
+.env.*.local
+**/.env
+**/.env.local
+**/.env.*.local
+!.env.example
+!**/.env.example
+
+# 本地配置文件（包含敏感信息）
+wordhint/config.js
+*.local.json
+**/*.local.json
+
+# 运行时 PID 文件
+*.pid
+
+# 依赖
+node_modules/
+
+# 构建产物
+dist/
+build/
+*.crx
+*.pem
+*.zip
+
+# 本地数据库与用户数据
+*.db
+*.sqlite
+*.sqlite3
+server/data/
+
+# Python 编译产物
+__pycache__/
+*.pyc
+
+# skill 生成产物与本地配置
+server/skills/**/output/
+server/skills/**/.claude/
+server/skills/**/*_backup.py
+
+# 证书、签名与发布密钥
+*.key
+*.p12
+*.cer
+*.mobileprovision
+
+# 编辑器
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# 日志
+*.log
+npm-debug.log*
+
+# 测试
+coverage/
+
+# 临时文件
+*.tmp
+.cache/
+
+# Xcode / iOS 本地状态
+DerivedData/
+*.xcuserstate
+xcuserdata/
+*.xcscmblueprint
+
+# 历史记录（项目内）
+.history/
+
+# 截图
+inslight/*.png
+inslight/*.jpg

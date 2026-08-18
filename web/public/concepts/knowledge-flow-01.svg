@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 360">
+  <rect width="900" height="360" rx="28" fill="#cf765f"/>
+  <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M30 180 C90 70 120 290 190 170 S280 70 350 180" stroke="#171615" stroke-width="7" stroke-dasharray="18 14">
+      <animate attributeName="stroke-dashoffset" from="0" to="-160" dur="7s" repeatCount="indefinite"/>
+    </path>
+    <path d="M30 205 C95 300 140 85 210 175 S290 280 350 145" stroke="#fff2e8" stroke-width="4" stroke-dasharray="3 16">
+      <animate attributeName="stroke-dashoffset" from="0" to="-150" dur="5s" repeatCount="indefinite"/>
+    </path>
+    <path d="M350 180 C400 180 418 180 455 180" stroke="#171615" stroke-width="7" stroke-dasharray="12 14">
+      <animate attributeName="stroke-dashoffset" from="0" to="-100" dur="4s" repeatCount="indefinite"/>
+    </path>
+  </g>
+  <g fill="#fff2e8" stroke="#171615" stroke-width="6">
+    <rect x="485" y="92" width="112" height="82" rx="14" transform="rotate(-5 541 133)"/>
+    <rect x="620" y="142" width="112" height="82" rx="14" transform="rotate(4 676 183)"/>
+    <rect x="485" y="216" width="112" height="82" rx="14" transform="rotate(4 541 257)"/>
+  </g>
+  <g fill="#e8a36b" stroke="#171615" stroke-width="5">
+    <circle cx="541" cy="133" r="9"><animate attributeName="r" values="8;13;8" dur="3s" repeatCount="indefinite"/></circle>
+    <circle cx="676" cy="183" r="9"><animate attributeName="r" values="8;13;8" dur="3s" begin=".8s" repeatCount="indefinite"/></circle>
+    <circle cx="541" cy="257" r="9"><animate attributeName="r" values="8;13;8" dur="3s" begin="1.5s" repeatCount="indefinite"/></circle>
+  </g>
+</svg>

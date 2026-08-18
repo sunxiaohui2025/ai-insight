@@ -1,0 +1,12 @@
+services:
+  insight:
+    build: .
+    restart: unless-stopped
+    env_file: .env
+    ports:
+      - "127.0.0.1:8000:8000"
+    volumes:
+      - insight-data:/data
+volumes:
+  insight-data:
+

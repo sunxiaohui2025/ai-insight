@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 360">
+  <rect width="900" height="360" rx="28" fill="#cf765f"/>
+  <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M42 180 C115 65 164 302 260 160 S388 40 470 180" stroke="#171615" stroke-width="7" stroke-dasharray="16 15">
+      <animate attributeName="stroke-dashoffset" from="0" to="-155" dur="7s" repeatCount="indefinite"/>
+    </path>
+    <path d="M470 180 C520 60 560 300 635 160 S745 70 855 180" stroke="#171615" stroke-width="7" stroke-dasharray="16 15">
+      <animate attributeName="stroke-dashoffset" from="0" to="-155" dur="7s" repeatCount="indefinite"/>
+    </path>
+    <path d="M40 220 C135 320 190 70 270 200 S390 275 470 180 S590 80 650 205 S760 300 860 130" stroke="#fff2e8" stroke-width="4" stroke-dasharray="3 16">
+      <animate attributeName="stroke-dashoffset" from="0" to="-190" dur="5s" repeatCount="indefinite"/>
+    </path>
+  </g>
+  <g fill="#e8a36b" stroke="#171615" stroke-width="5">
+    <circle cx="470" cy="180" r="13"><animate attributeName="r" values="11;19;11" dur="3s" repeatCount="indefinite"/></circle>
+  </g>
+  <g stroke="#fff2e8" stroke-width="5" stroke-linecap="round">
+    <path d="M720 96v48M696 120h48" opacity=".9"><animateTransform attributeName="transform" type="rotate" values="0 720 120;90 720 120;180 720 120;270 720 120;360 720 120" dur="10s" repeatCount="indefinite"/></path>
+  </g>
+</svg>

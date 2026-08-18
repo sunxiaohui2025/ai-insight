@@ -1,0 +1,18 @@
+[Unit]
+Description=WordHint Cloud API
+After=network.target
+
+[Service]
+Type=simple
+User=wordhint
+Group=wordhint
+WorkingDirectory=/opt/wordhint/server
+EnvironmentFile=/opt/wordhint/server/.env
+ExecStart=/opt/wordhint/server/.venv/bin/uvicorn app.main:app --host 127.0.0.1 --port 8000 --workers 2 --proxy-headers
+Restart=always
+RestartSec=5
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

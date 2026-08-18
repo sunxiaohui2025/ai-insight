@@ -1,0 +1,460 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 71;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		A34B1400-6506-4B9E-96F6-C24AFF84BC9E /* InsightApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = E30E22A3-03C0-4083-9E9D-AB61834A00E5 /* InsightApp.swift */; };
+		B0E27904-7A18-4517-A0FF-FF81D50E904B /* Article.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDAF2BAB-2334-4191-9CB9-2A70FB83D0C3 /* Article.swift */; };
+		52467C1B-C1DA-4B7A-820C-8EDA6E88D71C /* Category.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43A35D45-48E8-420A-BBAA-C5C95D55655E /* Category.swift */; };
+		86FA714C-7A4C-41F0-8545-AA3D493325B6 /* CloudService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9B53A5C-F8A0-45FF-AE0C-3CCF5A4D6435 /* CloudService.swift */; };
+		9011A7E2-B189-424E-A1FD-12DA7D630F98 /* AppTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F04FE98-06E7-4BE5-85A6-7F348F07271C /* AppTheme.swift */; };
+		6DCDED73-36A6-4465-BB37-41EC1CA52782 /* CategoryBrowseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F63A011-E3C7-4873-B828-95C60CC8A511 /* CategoryBrowseView.swift */; };
+		69E59CE1-7DB2-4B4E-A73E-FDA8A7C9F7BB /* CategoryListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22EB9BB6-9320-4C4A-8BAA-6C7C14237D2F /* CategoryListView.swift */; };
+		8C0C6838-77A6-47FF-9658-32D17751D0F4 /* DecodeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D93A9E3-48A1-415D-8410-E72D2F0958AC /* DecodeView.swift */; };
+		875B6CA1-8E6E-4E08-A966-A23A33BE60E6 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DC28185-53C4-4FE0-9F8B-B61B3B5D1875 /* HomeView.swift */; };
+		25DFF480-7D70-47E8-B982-D4B9D38EDD90 /* InsightAuthView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F624F8B-3842-40E0-BA89-B08E182D4EB5 /* InsightAuthView.swift */; };
+		146A885B-C938-4E27-BA56-EC866386815C /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C696DB2-8C4C-4B29-92A4-2D0CD52DEA23 /* MainView.swift */; };
+		BF8741C6-079F-4841-AF5D-A4C90BF47B00 /* ReaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D1317C9-384D-4044-B028-141F1E26415C /* ReaderView.swift */; };
+		F2A4BA60-703E-4BC7-B140-7B1923DA90ED /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2A2ADEA-0D81-4566-BC38-9147E7E7D71D /* SettingsView.swift */; };
+		ACCF8EEA-C867-48AE-97BC-BC1D7D35F6A6 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 249AA357-BA35-4046-B761-1EA32BB2D684 /* Assets.xcassets */; };
+		B159A250-67C6-4C9B-BCB8-ACBE29F0B145 /* ShareViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85BEB551-4CD4-466C-8B11-561BA4E9F4DB /* ShareViewController.swift */; };
+		AAC5F9D2-D066-4D28-83E5-6A35E4A9CC56 /* SharePreprocessor.js in Resources */ = {isa = PBXBuildFile; fileRef = CFE84AF5-37DC-4CB8-8CC4-E16C721A50D1 /* SharePreprocessor.js */; };
+		A20000000000000000000001 /* InsightShare.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = A10000000000000000000002 /* InsightShare.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		A20000000000000000000002 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A00000000000000000000001 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A10000000000000000000001;
+			remoteInfo = InsightShare;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		A00000000000000000000009 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				A20000000000000000000001 /* InsightShare.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		A00000000000000000000005 /* InsightIOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = InsightIOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A10000000000000000000002 /* InsightShare.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = InsightShare.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		249AA357-BA35-4046-B761-1EA32BB2D684 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		E30E22A3-03C0-4083-9E9D-AB61834A00E5 /* InsightApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InsightApp.swift; sourceTree = "<group>"; };
+		EDAF2BAB-2334-4191-9CB9-2A70FB83D0C3 /* Article.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Article.swift; sourceTree = "<group>"; };
+		43A35D45-48E8-420A-BBAA-C5C95D55655E /* Category.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Category.swift; sourceTree = "<group>"; };
+		C9B53A5C-F8A0-45FF-AE0C-3CCF5A4D6435 /* CloudService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudService.swift; sourceTree = "<group>"; };
+		8F04FE98-06E7-4BE5-85A6-7F348F07271C /* AppTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppTheme.swift; sourceTree = "<group>"; };
+		6F63A011-E3C7-4873-B828-95C60CC8A511 /* CategoryBrowseView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryBrowseView.swift; sourceTree = "<group>"; };
+		22EB9BB6-9320-4C4A-8BAA-6C7C14237D2F /* CategoryListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryListView.swift; sourceTree = "<group>"; };
+		4D93A9E3-48A1-415D-8410-E72D2F0958AC /* DecodeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DecodeView.swift; sourceTree = "<group>"; };
+		9DC28185-53C4-4FE0-9F8B-B61B3B5D1875 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
+		8F624F8B-3842-40E0-BA89-B08E182D4EB5 /* InsightAuthView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InsightAuthView.swift; sourceTree = "<group>"; };
+		5C696DB2-8C4C-4B29-92A4-2D0CD52DEA23 /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
+		4D1317C9-384D-4044-B028-141F1E26415C /* ReaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReaderView.swift; sourceTree = "<group>"; };
+		C2A2ADEA-0D81-4566-BC38-9147E7E7D71D /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		85BEB551-4CD4-466C-8B11-561BA4E9F4DB /* ShareViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareViewController.swift; sourceTree = "<group>"; };
+		CFE84AF5-37DC-4CB8-8CC4-E16C721A50D1 /* SharePreprocessor.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = SharePreprocessor.js; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		A00000000000000000000007 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A10000000000000000000004 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		A00000000000000000000002 = {
+			isa = PBXGroup;
+			children = (
+				3E1D73C9-BBEB-4F97-AAC4-1CCA33C92469 /* InsightIOS */,
+				942E72C2-E6DF-4D69-B6CA-3F9CDD7AAA3F /* InsightShare */,
+				A00000000000000000000003 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		3E1D73C9-BBEB-4F97-AAC4-1CCA33C92469 /* InsightIOS */ = {
+			isa = PBXGroup;
+			children = (
+				249AA357-BA35-4046-B761-1EA32BB2D684 /* Assets.xcassets */,
+				E30E22A3-03C0-4083-9E9D-AB61834A00E5 /* InsightApp.swift */,
+				B43BC546-DDC2-4267-89CC-2F030C04B488 /* Models */,
+				43CC40AE-1D77-4D15-AF08-3FBFAEF1EB97 /* Services */,
+				4A7A56A9-2BE2-483A-9B08-76F2B7BD05B3 /* Theme */,
+				DAAD773C-3E3F-4DBE-9887-0E75910547BE /* Views */,
+			);
+			name = InsightIOS;
+			path = InsightIOS;
+			sourceTree = "<group>";
+		};
+		942E72C2-E6DF-4D69-B6CA-3F9CDD7AAA3F /* InsightShare */ = {
+			isa = PBXGroup;
+			children = (
+				85BEB551-4CD4-466C-8B11-561BA4E9F4DB /* ShareViewController.swift */,
+				CFE84AF5-37DC-4CB8-8CC4-E16C721A50D1 /* SharePreprocessor.js */,
+			);
+			name = InsightShare;
+			path = InsightShare;
+			sourceTree = "<group>";
+		};
+		A00000000000000000000003 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A00000000000000000000005 /* InsightIOS.app */,
+				A10000000000000000000002 /* InsightShare.appex */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		B43BC546-DDC2-4267-89CC-2F030C04B488 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				EDAF2BAB-2334-4191-9CB9-2A70FB83D0C3 /* Article.swift */,
+				43A35D45-48E8-420A-BBAA-C5C95D55655E /* Category.swift */,
+			);
+			name = Models;
+			path = Models;
+			sourceTree = "<group>";
+		};
+		43CC40AE-1D77-4D15-AF08-3FBFAEF1EB97 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				C9B53A5C-F8A0-45FF-AE0C-3CCF5A4D6435 /* CloudService.swift */,
+			);
+			name = Services;
+			path = Services;
+			sourceTree = "<group>";
+		};
+		4A7A56A9-2BE2-483A-9B08-76F2B7BD05B3 /* Theme */ = {
+			isa = PBXGroup;
+			children = (
+				8F04FE98-06E7-4BE5-85A6-7F348F07271C /* AppTheme.swift */,
+			);
+			name = Theme;
+			path = Theme;
+			sourceTree = "<group>";
+		};
+		DAAD773C-3E3F-4DBE-9887-0E75910547BE /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				6F63A011-E3C7-4873-B828-95C60CC8A511 /* CategoryBrowseView.swift */,
+				22EB9BB6-9320-4C4A-8BAA-6C7C14237D2F /* CategoryListView.swift */,
+				4D93A9E3-48A1-415D-8410-E72D2F0958AC /* DecodeView.swift */,
+				9DC28185-53C4-4FE0-9F8B-B61B3B5D1875 /* HomeView.swift */,
+				8F624F8B-3842-40E0-BA89-B08E182D4EB5 /* InsightAuthView.swift */,
+				5C696DB2-8C4C-4B29-92A4-2D0CD52DEA23 /* MainView.swift */,
+				4D1317C9-384D-4044-B028-141F1E26415C /* ReaderView.swift */,
+				C2A2ADEA-0D81-4566-BC38-9147E7E7D71D /* SettingsView.swift */,
+			);
+			name = Views;
+			path = Views;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXSourcesBuildPhase section */
+		A00000000000000000000006 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A34B1400-6506-4B9E-96F6-C24AFF84BC9E /* InsightApp.swift in Sources */,
+				B0E27904-7A18-4517-A0FF-FF81D50E904B /* Article.swift in Sources */,
+				52467C1B-C1DA-4B7A-820C-8EDA6E88D71C /* Category.swift in Sources */,
+				86FA714C-7A4C-41F0-8545-AA3D493325B6 /* CloudService.swift in Sources */,
+				9011A7E2-B189-424E-A1FD-12DA7D630F98 /* AppTheme.swift in Sources */,
+				6DCDED73-36A6-4465-BB37-41EC1CA52782 /* CategoryBrowseView.swift in Sources */,
+				69E59CE1-7DB2-4B4E-A73E-FDA8A7C9F7BB /* CategoryListView.swift in Sources */,
+				8C0C6838-77A6-47FF-9658-32D17751D0F4 /* DecodeView.swift in Sources */,
+				875B6CA1-8E6E-4E08-A966-A23A33BE60E6 /* HomeView.swift in Sources */,
+				25DFF480-7D70-47E8-B982-D4B9D38EDD90 /* InsightAuthView.swift in Sources */,
+				146A885B-C938-4E27-BA56-EC866386815C /* MainView.swift in Sources */,
+				BF8741C6-079F-4841-AF5D-A4C90BF47B00 /* ReaderView.swift in Sources */,
+				F2A4BA60-703E-4BC7-B140-7B1923DA90ED /* SettingsView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A10000000000000000000003 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B159A250-67C6-4C9B-BCB8-ACBE29F0B145 /* ShareViewController.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXResourcesBuildPhase section */
+		A00000000000000000000008 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				ACCF8EEA-C867-48AE-97BC-BC1D7D35F6A6 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A10000000000000000000005 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AAC5F9D2-D066-4D28-83E5-6A35E4A9CC56 /* SharePreprocessor.js in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		A00000000000000000000004 /* InsightIOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A0000000000000000000000A /* Build configuration list for PBXNativeTarget "InsightIOS" */;
+			buildPhases = (
+				A00000000000000000000006 /* Sources */,
+				A00000000000000000000007 /* Frameworks */,
+				A00000000000000000000008 /* Resources */,
+				A00000000000000000000009 /* Embed Foundation Extensions */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				A20000000000000000000003 /* PBXTargetDependency */,
+			);
+			name = InsightIOS;
+			productName = InsightIOS;
+			productReference = A00000000000000000000005 /* InsightIOS.app */;
+			productType = "com.apple.product-type.application";
+		};
+		A10000000000000000000001 /* InsightShare */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A10000000000000000000006 /* Build configuration list for PBXNativeTarget "InsightShare" */;
+			buildPhases = (
+				A10000000000000000000003 /* Sources */,
+				A10000000000000000000004 /* Frameworks */,
+				A10000000000000000000005 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = InsightShare;
+			productName = InsightShare;
+			productReference = A10000000000000000000002 /* InsightShare.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		A00000000000000000000001 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 2660;
+				LastUpgradeCheck = 1600;
+				TargetAttributes = {
+					A00000000000000000000004 = {
+						CreatedOnToolsVersion = 16.0;
+					};
+					A10000000000000000000001 = {
+						CreatedOnToolsVersion = 16.0;
+					};
+				};
+			};
+			buildConfigurationList = A30000000000000000000001 /* Build configuration list for PBXProject "InsightIOS" */;
+			compatibilityVersion = "Xcode 16.0";
+			developmentRegion = zh_CN;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				zh_CN,
+				en,
+				Base,
+			);
+			mainGroup = A00000000000000000000002;
+			productRefGroup = A00000000000000000000003 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				A00000000000000000000004 /* InsightIOS */,
+				A10000000000000000000001 /* InsightShare */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXTargetDependency section */
+		A20000000000000000000003 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A10000000000000000000001 /* InsightShare */;
+			targetProxy = A20000000000000000000002 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		A30000000000000000000002 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		A30000000000000000000003 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		A0000000000000000000000B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = InsightIOS/InsightIOS.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "";
+				DEVELOPMENT_TEAM = CVSJZYYQBC;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = InsightIOS/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "InSight";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.news";
+				INFOPLIST_KEY_NSAppTransportSecurity_NSAllowsArbitraryLoads = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UIRequiresFullScreen = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.sun.insight;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		A0000000000000000000000C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = InsightIOS/InsightIOS.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "";
+				DEVELOPMENT_TEAM = CVSJZYYQBC;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = InsightIOS/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "InSight";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.news";
+				INFOPLIST_KEY_NSAppTransportSecurity_NSAllowsArbitraryLoads = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UIRequiresFullScreen = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.sun.insight;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		A10000000000000000000007 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = InsightShare/InsightShare.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = CVSJZYYQBC;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = InsightShare/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "InSight";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.sun.insight.share;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		A10000000000000000000008 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = InsightShare/InsightShare.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = CVSJZYYQBC;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = InsightShare/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "InSight";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.sun.insight.share;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		A30000000000000000000001 /* Build configuration list for PBXProject "InsightIOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A30000000000000000000002 /* Debug */,
+				A30000000000000000000003 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A0000000000000000000000A /* Build configuration list for PBXNativeTarget "InsightIOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A0000000000000000000000B /* Debug */,
+				A0000000000000000000000C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A10000000000000000000006 /* Build configuration list for PBXNativeTarget "InsightShare" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A10000000000000000000007 /* Debug */,
+				A10000000000000000000008 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = A00000000000000000000001 /* Project object */;
+}

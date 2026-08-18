@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" role="img" aria-label="WordHint icon open book">
+  <rect width="1024" height="1024" fill="#C76F45"/>
+  <g fill="none" stroke="#FFF8F0" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M515 295c-65-54-151-77-262-68-38 3-65 33-65 71v420c0 28 24 49 52 45 104-15 191-1 275 50 82-52 173-66 278-51 28 4 52-17 52-45V297c0-39-28-69-67-71-109-6-197 16-263 69Z" stroke-width="35"/>
+    <path d="M515 296v515" stroke-width="30"/>
+    <path d="M291 356c56-5 106 2 149 20" stroke-width="27"/>
+    <path d="M291 466c56-6 106 1 149 19" stroke-width="27"/>
+    <path d="M291 576c54-4 105 3 149 21" stroke-width="27"/>
+    <path d="M594 372c31-11 68-16 111-14" stroke-width="27"/>
+    <path d="M594 482c43-15 90-19 140-12" stroke-width="27"/>
+    <path d="M594 592c51-16 104-20 160-11" stroke-width="27"/>
+    <path d="M675 314c-37 89-63 174-78 253 63-70 125-130 186-181" stroke-width="43"/>
+  </g>
+</svg>
