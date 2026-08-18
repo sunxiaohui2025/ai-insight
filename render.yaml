@@ -3,11 +3,10 @@
 services:
   - type: web
     name: insight-server
-    runtime: python
+    runtime: docker
     plan: free
-    rootDir: server
-    buildCommand: pip install -r requirements.txt
-    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    rootDir: .
+    dockerfilePath: ./Dockerfile
     healthCheckPath: /health
     envVars:
       - key: INSIGHT_DATABASE

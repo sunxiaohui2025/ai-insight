@@ -29,6 +29,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import FolderIcon from '@mui/icons-material/Folder';
 import SubdirectoryArrowRightIcon from '@mui/icons-material/SubdirectoryArrowRight';
+import { API_BASE_URL } from '../../services/api';
 
 // 只使用抽象、线性的符号，避免把具体实物当作分类含义。
 const LINEAR_ICON_OPTIONS = ['⌁', '◌', '△', '□', '◎', '↗', '≋', '⊕'];
@@ -81,7 +82,7 @@ const CategoryManagement: React.FC = () => {
     setError('');
     try {
       const response = await fetch(
-        `${process.env.REACT_APP_API_BASE_URL}/api/v1/admin/sections/${sectionId}/categories`,
+        `${API_BASE_URL}/api/v1/admin/sections/${sectionId}/categories`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
@@ -122,8 +123,8 @@ const CategoryManagement: React.FC = () => {
     try {
       const url =
         dialogMode === 'add'
-          ? `${process.env.REACT_APP_API_BASE_URL}/api/v1/admin/categories`
-          : `${process.env.REACT_APP_API_BASE_URL}/api/v1/admin/categories/${currentCategory.id}`;
+          ? `${API_BASE_URL}/api/v1/admin/categories`
+          : `${API_BASE_URL}/api/v1/admin/categories/${currentCategory.id}`;
 
       const method = dialogMode === 'add' ? 'POST' : 'PUT';
 
@@ -164,7 +165,7 @@ const CategoryManagement: React.FC = () => {
 
     try {
       const response = await fetch(
-        `${process.env.REACT_APP_API_BASE_URL}/api/v1/admin/categories/${category.id}`,
+        `${API_BASE_URL}/api/v1/admin/categories/${category.id}`,
         {
           method: 'DELETE',
           headers: {

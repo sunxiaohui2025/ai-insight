@@ -28,7 +28,7 @@ import httpx
 from bs4 import BeautifulSoup
 from fastapi import BackgroundTasks, Depends, FastAPI, Header, HTTPException, Request, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.responses import FileResponse, HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 from trafilatura import extract as trafilatura_extract
@@ -37,6 +37,8 @@ DB_PATH = os.getenv("INSIGHT_DATABASE", str(Path(__file__).parent.parent / "insi
 SKILLS_PATH = Path(os.getenv("INSIGHT_SKILLS_PATH", str(Path(__file__).parent.parent / "data" / "skills")))
 UPLOADS_PATH = Path(os.getenv("INSIGHT_UPLOADS_PATH", str(Path(__file__).parent.parent / "data" / "agent_uploads")))
 MEDIA_PATH = Path(os.getenv("INSIGHT_MEDIA_PATH", str(Path(__file__).parent.parent / "data" / "media")))
+# React 前端生产构建目录（由后端托管，达到单服务同源部署）
+WEB_BUILD_DIR = Path(os.getenv("INSIGHT_WEB_BUILD", str(Path(__file__).parent.parent.parent / "web" / "build")))
 STYLE_SPEC_PATH = Path(__file__).parent.parent / "anthropic-style.md"
 SECRET = os.getenv("INSIGHT_SECRET", "change-me-in-production").encode()
 TOKEN_TTL = 60 * 60 * 24 * 30
@@ -5151,3 +5153,27 @@ def admin_update_content_article(article_id: int, body: AdminContentArticleIn, _
         conn.execute(f"UPDATE insight_articles SET {sets} WHERE id=?", (*fields.values(), article_id))
 
     return {"id": article_id, "status": fields["status"], "message": "保存成功"}
+
+
+# ========================================
+# React 前端托管（生产单服务部署）
+# 由后端统一托管 React build：静态资源 + SPA 兜底回退到 index.html
+# ========================================
+@app.get("/{full_path:path}", include_in_schema=False)
+def serve_frontend(full_path: str):
+    # 后端自身的路径优先（前面的路由已先匹配）；这里只兜底真正的未知路径。
+    prefix = full_path.split("/", 1)[0]
+    if prefix in ("api", "media", "health") or full_path in ("docs", "redoc", "openapi.json"):
+        raise HTTPException(status_code=404, detail="Not Found")
+    index = WEB_BUILD_DIR / "index.html"
+    if not index.is_file():
+        raise HTTPException(status_code=404, detail="Not Found")
+    if full_path:
+        candidate = (WEB_BUILD_DIR / full_path).resolve()
+        try:
+            candidate.relative_to(WEB_BUILD_DIR.resolve())
+        except ValueError:
+            candidate = index
+        if candidate.is_file():
+            return FileResponse(candidate)
+    return FileResponse(index)

@@ -15,7 +15,9 @@ import {
   AgentFile,
 } from '../types';
 
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8000';
+// 生产环境下后端与前端同源（由后端托管 React build），base 为空 → 走相对路径；
+// 本地开发用 .env 里的 REACT_APP_API_BASE_URL 指到后端端口。
+export const API_BASE_URL = (process.env.REACT_APP_API_BASE_URL || '').replace(/\/$/, '');
 
 const api = axios.create({
   baseURL: API_BASE_URL,
