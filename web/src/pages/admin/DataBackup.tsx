@@ -49,7 +49,7 @@ const DataBackup: React.FC = () => {
         .replace(/[-:]/g, '')
         .replace(/T/, '-')
         .replace(/\..+/, '');
-      a.download = `insight-backup-${stamp}.db`;
+      a.download = `insight-backup-${stamp}.zip`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -105,11 +105,12 @@ const DataBackup: React.FC = () => {
             </Typography>
           </Box>
           <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-            导出一个 .db 文件，包含全部业务数据（用户、文章、分类、板块、设置、事件、Agent 等）。
+            导出一个 <strong>.zip</strong> 备份包，包含全部业务数据（用户、文章、分类、板块、设置、事件、Agent 等）
+            以及文章引用的媒体文件（标题图 / 正文图）。
             备份会自动剔除大模型连接地址与 API Key，安全用于迁移。
           </Typography>
           <Button variant="contained" startIcon={<DownloadIcon />} onClick={handleExport} disabled={exporting}>
-            {exporting ? <CircularProgress size={20} color="inherit" /> : '下载备份 (.db)'}
+            {exporting ? <CircularProgress size={20} color="inherit" /> : '下载备份 (.zip)'}
           </Button>
         </CardContent>
       </Card>
@@ -124,18 +125,18 @@ const DataBackup: React.FC = () => {
             </Typography>
           </Box>
           <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-            上传一个 .db / .sqlite 备份文件，按主键<strong>合并</strong>进当前库（不会清空已有数据，同名主键会覆盖）。
-            不会写入大模型连接配置。可直接用于把旧环境数据迁移到新部署。
+            上传一个 <strong>.zip</strong> 备份包（或 .db 文件），按主键<strong>合并</strong>进当前库（不会清空已有数据，同名主键会覆盖）。
+            会一并恢复文章引用的媒体文件（标题图 / 正文图），不会写入大模型连接配置。可直接用于把旧环境迁移到新部署。
           </Typography>
           <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 2 }}>
-            提示：WordHunt 旧版数据库等含大模型配置的库也可使用，迁移时 llm_models 会被自动跳过。
+            提示：含大模型配置的库也可使用，迁移时 llm_models 会被自动跳过。
           </Typography>
 
           <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', flexWrap: 'wrap' }}>
             <input
               ref={fileInputRef}
               type="file"
-              accept=".db,.sqlite,.sqlite3"
+              accept=".zip,.db,.sqlite,.sqlite3"
               hidden
               onChange={(e) => {
                 const f = e.target.files?.[0] || null;
@@ -167,6 +168,14 @@ const DataBackup: React.FC = () => {
                   <Chip size="small" color="warning" label="部分失败" sx={{ ml: 1 }} />
                 )}
                 <Chip size="small" variant="outlined" label={`已排除: ${result.excluded.join(', ') || '无'}`} sx={{ ml: 1 }} />
+                {typeof result.media_restored === 'number' && (
+                  <Chip
+                    size="small"
+                    color={result.media_restored > 0 ? 'primary' : 'default'}
+                    label={`恢复媒体文件: ${result.media_restored} 个（标题图/正文图）`}
+                    sx={{ ml: 1 }}
+                  />
+                )}
               </Box>
               <Table size="small">
                 <TableHead>

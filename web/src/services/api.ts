@@ -485,18 +485,20 @@ export const modelApi = {
 export interface DbImportResult {
   ok: boolean;
   imported: Record<string, number>;
+  /** 从 zip 备份中恢复的媒体文件（标题图/正文图）数量 */
+  media_restored?: number;
   excluded: string[];
   errors: string[];
 }
 
 export const dataBackupApi = {
-  /** 导出脱敏备份（不含大模型连接配置/API Key），返回 .db 文件 Blob */
+  /** 导出完整备份 zip（脱敏数据库 + 引用的媒体文件，不含大模型连接配置/API Key） */
   exportDb: async (): Promise<Blob> => {
     const res = await api.get<Blob>('/api/v1/admin/db/export', { responseType: 'blob' });
     return res.data;
   },
 
-  /** 导入 .db 备份并合并进当前库（自动排除大模型连接配置） */
+  /** 导入 .db 或 .zip 备份并合并进当前库，恢复数据库与媒体文件（自动排除大模型连接配置） */
   importDb: (file: File) => {
     const formData = new FormData();
     formData.append('file', file);

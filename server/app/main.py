@@ -5172,10 +5172,36 @@ async def admin_db_import(file: UploadFile = File(...), _: sqlite3.Row = Depends
     except Exception as e:
         raise HTTPException(400, f"读取上传文件失败: {e}")
     if not content:
-        raise HTTPException(400, "上传的数据库为空")
+        raise HTTPException(400, "上传的文件为空")
+
+    db_bytes = content
+    media_restored = 0
+    if content[:2] == b"PK":  # 是 zip 备份包（含数据库 + 媒体文件）
+        import io as _io
+        import zipfile as _zipfile
+        try:
+            zf = _zipfile.ZipFile(_io.BytesIO(content))
+        except _zipfile.BadZipFile:
+            raise HTTPException(400, "无法识别的 zip 备份包")
+        names = zf.namelist()
+        if "insight.db" not in names:
+            raise HTTPException(400, "备份包缺少 insight.db")
+        db_bytes = zf.read("insight.db")
+        for name in names:
+            if not name.startswith("media/"):
+                continue
+            rel = name[len("media/"):]
+            target = (MEDIA_PATH / rel).resolve()
+            try:
+                target.relative_to(MEDIA_PATH.resolve())
+            except ValueError:
+                continue
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes(zf.read(name))
+            media_restored += 1
 
     tmp = tempfile.NamedTemporaryFile(suffix=".db", delete=False)
-    tmp.write(content)
+    tmp.write(db_bytes)
     tmp.close()
 
     summary: dict[str, int] = {}
@@ -5229,20 +5255,50 @@ async def admin_db_import(file: UploadFile = File(...), _: sqlite3.Row = Depends
     return {
         "ok": not errors,
         "imported": summary,
+        "media_restored": media_restored,
         "excluded": sorted(MIGRATION_EXCLUDE_TABLES - {"sqlite_sequence"}),
         "errors": errors,
     }
 
 
-@app.get("/api/v1/admin/db/export")
-def admin_db_export(_: sqlite3.Row = Depends(admin_user)):
-    """导出当前数据库的脱敏备份。
+MEDIA_REF_PATTERN = re.compile(r"/media/((?:banners|images|documents)/[A-Za-z0-9._-]+)")
 
-    备份会复制除 llm_models（大模型连接配置 + API Key）之外的所有数据表，
-    确保导出的备份里不包含任何大模型连接信息或 Key，可放心用于迁移与环境迁移。
-    """
+
+def _referenced_media_files() -> list[Path]:
+    """收集所有文章字段中引用到的、真实存在于磁盘的媒体文件（相对 MEDIA_PATH）。"""
+    fields = [
+        "banner_url",
+        "attachment_url",
+        "original_content",
+        "translated_content",
+        "manual_content",
+        "excerpt",
+        "one_page_summary",
+    ]
+    refs: set[str] = set()
+    with db() as conn:
+        for f in fields:
+            for (val,) in conn.execute(f"SELECT {f} FROM insight_articles"):
+                if not val:
+                    continue
+                for m in MEDIA_REF_PATTERN.findall(val):
+                    refs.add(m)
+    base = MEDIA_PATH.resolve()
+    files: list[Path] = []
+    for rel in refs:
+        p = (MEDIA_PATH / rel).resolve()
+        try:
+            p.relative_to(base)
+        except ValueError:
+            continue
+        if p.is_file():
+            files.append(p)
+    return files
+
+
+def _build_backup_db_bytes() -> bytes:
+    """构建脱敏数据库备份字节：复制全部业务表，llm_models 只保留空表结构、不含数据。"""
     import tempfile
-
     tmp = tempfile.NamedTemporaryFile(suffix=".db", delete=False)
     tmp.close()
     try:
@@ -5250,7 +5306,6 @@ def admin_db_export(_: sqlite3.Row = Depends(admin_user)):
         with db() as conn:
             tables = [r[0] for r in conn.execute("SELECT name FROM sqlite_master WHERE type='table'")]
             for t in tables:
-                # sqlite_sequence 是系统保留表，不可手动创建，交由 SQLite 自动维护
                 if t == "sqlite_sequence":
                     continue
                 ddl = conn.execute(
@@ -5259,7 +5314,6 @@ def admin_db_export(_: sqlite3.Row = Depends(admin_user)):
                 if ddl and ddl[0]:
                     dst.execute(ddl[0])
                 if t in MIGRATION_EXCLUDE_TABLES:
-                    # 保留空表结构，但跳过数据（不导出大模型配置）
                     continue
                 cols = [d[1] for d in conn.execute(f'PRAGMA table_info("{t}")')]
                 rows = conn.execute(f'SELECT * FROM "{t}"').fetchall()
@@ -5273,21 +5327,38 @@ def admin_db_export(_: sqlite3.Row = Depends(admin_user)):
         dst.commit()
         dst.close()
         with open(tmp.name, "rb") as f:
-            data = f.read()
-        os.unlink(tmp.name)
-        stamp = str(int(time.time()))
-        filename = f"insight-backup-{stamp}.db"
-        return Response(
-            data,
-            media_type="application/octet-stream",
-            headers={"Content-Disposition": f'attachment; filename="{filename}"'},
-        )
-    except Exception:
+            return f.read()
+    finally:
         try:
             os.unlink(tmp.name)
         except OSError:
             pass
-        raise
+
+
+@app.get("/api/v1/admin/db/export")
+def admin_db_export(_: sqlite3.Row = Depends(admin_user)):
+    """导出完整备份 zip：脱敏数据库 + 文章引用的媒体文件（标题图/正文图）。
+
+    数据库会排除 llm_models（大模型连接配置 + API Key）；媒体文件仅打包当前文章真正引用的那些。
+    导入该 zip 可一次性恢复数据库与图片。
+    """
+    import io
+    import zipfile
+
+    base = MEDIA_PATH.resolve()
+    buf = io.BytesIO()
+    with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as zf:
+        zf.writestr("insight.db", _build_backup_db_bytes())
+        for p in _referenced_media_files():
+            zf.write(str(p), arcname="media/" + str(p.relative_to(base)))
+    buf.seek(0)
+    stamp = str(int(time.time()))
+    filename = f"insight-backup-{stamp}.zip"
+    return Response(
+        buf.getvalue(),
+        media_type="application/zip",
+        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+    )
 
 
 # ========================================
