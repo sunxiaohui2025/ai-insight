@@ -5156,6 +5156,85 @@ def admin_update_content_article(article_id: int, body: AdminContentArticleIn, _
 
 
 # ========================================
+# 数据迁移：管理员上传 SQLite 数据库并合并进当前库
+# 会排除大模型连接配置表 llm_models（含 API Key），避免把模型连接/密钥迁移到新环境。
+# 其余所有表（用户、文章、分类、板块、设置、事件、Agent 等）原样迁移。
+# ========================================
+MIGRATION_EXCLUDE_TABLES = {"llm_models", "sqlite_sequence"}
+
+
+@app.post("/api/v1/admin/db/import")
+async def admin_db_import(file: UploadFile = File(...), _: sqlite3.Row = Depends(admin_user)):
+    import tempfile
+
+    try:
+        content = await file.read()
+    except Exception as e:
+        raise HTTPException(400, f"读取上传文件失败: {e}")
+    if not content:
+        raise HTTPException(400, "上传的数据库为空")
+
+    tmp = tempfile.NamedTemporaryFile(suffix=".db", delete=False)
+    tmp.write(content)
+    tmp.close()
+
+    summary: dict[str, int] = {}
+    errors: list[str] = []
+    try:
+        src = sqlite3.connect(tmp.name)
+        src.row_factory = sqlite3.Row
+        tables = [r[0] for r in src.execute("SELECT name FROM sqlite_master WHERE type='table'")]
+
+        with db() as conn:
+            for t in tables:
+                if t in MIGRATION_EXCLUDE_TABLES:
+                    continue
+                try:
+                    # 目标库若缺表，则先按源库 schema 建表（仅复制 CREATE TABLE，忽略索引/触发器等）
+                    exists = conn.execute(
+                        "SELECT 1 FROM sqlite_master WHERE type='table' AND name=?", (t,)
+                    ).fetchone()
+                    if not exists:
+                        ddl = src.execute(
+                            "SELECT sql FROM sqlite_master WHERE type='table' AND name=?", (t,)
+                        ).fetchone()
+                        if ddl and ddl[0]:
+                            conn.execute(ddl[0])
+
+                    # 只迁移两边都存在的列，避免 schema 差异导致失败
+                    src_cols = [d[1] for d in src.execute(f'PRAGMA table_info("{t}")')]
+                    tgt_cols = [d[1] for d in conn.execute(f'PRAGMA table_info("{t}")')]
+                    tgt_set = set(tgt_cols)
+                    shared = [c for c in src_cols if c in tgt_set]
+                    if not shared:
+                        continue
+
+                    quoted = ", ".join(f'"{c}"' for c in shared)
+                    ph = ", ".join("?" for _ in shared)
+                    rows = src.execute(
+                        f'SELECT {", ".join(f'"{c}"' for c in shared)} FROM "{t}"'
+                    ).fetchall()
+                    for row in rows:
+                        conn.execute(f'INSERT OR REPLACE INTO "{t}" ({quoted}) VALUES ({ph})', tuple(row))
+                    summary[t] = len(rows)
+                except Exception as e:  # noqa: BLE001
+                    errors.append(f"{t}: {e}")
+        src.close()
+    finally:
+        try:
+            os.unlink(tmp.name)
+        except OSError:
+            pass
+
+    return {
+        "ok": not errors,
+        "imported": summary,
+        "excluded": sorted(MIGRATION_EXCLUDE_TABLES - {"sqlite_sequence"}),
+        "errors": errors,
+    }
+
+
+# ========================================
 # React 前端托管（生产单服务部署）
 # 由后端统一托管 React build：静态资源 + SPA 兜底回退到 index.html
 # ========================================
