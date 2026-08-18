@@ -1,0 +1,28 @@
+# Render Blueprint 部署配置（免费版）
+# 连接仓库后选择 New → Blueprint 可自动应用此配置
+services:
+  - type: web
+    name: insight-server
+    runtime: python
+    plan: free
+    rootDir: server
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: INSIGHT_DATABASE
+        value: /var/render/insight.db
+      - key: INSIGHT_SECRET
+        generateValue: true
+      - key: INSIGHT_ADMIN_EMAIL
+        sync: false
+      - key: INSIGHT_ADMIN_PASSWORD
+        sync: false
+      - key: INSIGHT_LLM_BASE_URL
+        sync: false
+      - key: INSIGHT_LLM_MODEL
+        sync: false
+      - key: INSIGHT_LLM_API_KEY
+        sync: false
+      - key: INSIGHT_PUBLIC_URL
+        sync: false
