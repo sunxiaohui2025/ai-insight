@@ -1,7 +1,17 @@
-"""X (Twitter) 平台内容抓取器"""
-from playwright.sync_api import sync_playwright, TimeoutError as PlaywrightTimeout
+"""X (Twitter) 平台内容抓取器
+
+Playwright 为可选项：未安装时 fetch() 会抛出明确错误，
+由 main.py 自动回退到 fxtwitter 备用方案（无需浏览器）。
+"""
 from src.config import Config
 import time
+
+# Playwright 可选导入：服务器上未安装时，skill 仍可加载并走备用方案
+try:
+    from playwright.sync_api import sync_playwright, TimeoutError as PlaywrightTimeout
+    _PLAYWRIGHT_AVAILABLE = True
+except ImportError:  # pragma: no cover
+    _PLAYWRIGHT_AVAILABLE = False
 
 
 class XFetcher:
@@ -9,7 +19,7 @@ class XFetcher:
         self.headless = Config.X_HEADLESS
         self.timeout = Config.X_TIMEOUT
         self.wait_time = Config.X_WAIT_TIME
-    
+
     def fetch(self, url: str) -> str:
         """
         使用 Playwright 抓取 X 页面内容
@@ -19,8 +29,18 @@ class XFetcher:
 
         Returns:
             str: 页面 HTML 内容
+
+        Raises:
+            RuntimeError: 未安装 playwright 时抛出，供上层回退到备用方案
         """
         print(f"开始抓取 X 页面: {url}")
+
+        if not _PLAYWRIGHT_AVAILABLE:
+            raise RuntimeError(
+                "Playwright 未安装（缺少依赖 playwright / chromium 浏览器），"
+                "已回退到 fxtwitter 备用方案。如需直接抓取 X 页面，请先执行："
+                "pip install playwright && playwright install chromium"
+            )
 
         with sync_playwright() as p:
             # 启动浏览器，添加更多参数以绕过检测

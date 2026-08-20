@@ -1,68 +1,68 @@
 # URL 转文章提取器 Skill
 
-将任何 URL（X 平台推文、技术博客等）转换为精美的中文文章和一页纸总结。
+将任何 URL（X 平台推文、技术博客等）抓取、解析为结构化素材，再由宿主 agent
+基于这些素材生成精美的中文文章和一页纸总结。
+
+> **分工原则**：本 skill 只负责「抓取 + 解析」，内部**不直连任何大模型**。
+> 翻译、推文串整合、HTML 生成、Banner 等 LLM 任务全部由宿主 agent 完成
+> （模型能力由 agent 提供），并参照 `prompts/` 目录下的模板执行。
+> 因此仓库内不硬编码、不提交任何模型地址 / 名称 / API 密钥。
 
 ## 功能描述
 
-这是一个智能内容提取和转换工具，可以：
 - 从 X (Twitter) 平台和普通网页抓取内容
-- 自动检测语言并将英文翻译成中文
-- 生成两种格式的 HTML 输出：
-  - 完整文章（Medium 风格）
-  - 一页纸解读（顶部 16:9 banner + 长文解读排版）
-- 保留所有图片和视频
-- 自动去除广告、导航等杂质内容
+- 提取正文、元数据、媒体资源，并自动检测语言
+- 自动去除广告、导航、登录墙等杂质（遇到登录墙自动回退备用方案）
+- 将提取结果保存为 JSON + Markdown 素材（`output/extract_*.{json,md}`）
+- 宿主 agent 基于素材进一步生成：
+  - 推文串整合 / 中英翻译
+  - 完整文章 HTML（Medium 风格）
+  - 一页纸解读 HTML（顶部 16:9 banner + 长文解读排版）
 
 ## 使用方法
 
-### 基本用法
+### 宿主 agent 环境（推荐，脚本运行器）
+
+宿主 agent 通过 `run_skill.py`（skill 根目录入口，导出 `generate`/`run`）调用：
+
+```python
+# run_skill.generate / run 接收 url 参数，返回提取结果与素材路径
+result = run_skill.generate(url="https://x.com/hwchase17/status/2085780032031760694")
+```
+
+```bash
+# 等价命令行
+python run_skill.py "<URL>"
+```
+
+> `run_skill.py` 会把 skill 根目录加入 sys.path，从而解决
+> `src/main.py` 无法作为入口导入的问题（`No module named 'src'`）。
+
+### 终端直接运行（本地调试）
 
 ```bash
 python -m src.main "<URL>"
 ```
 
-### 示例
-
-```bash
-# 处理 X 平台推文
-python -m src.main "https://x.com/hwchase17/status/2085780032031760694"
-
-# 处理普通网页
-python -m src.main "https://www.kimi.com/blog/kimi-k3"
-
-# 处理技术博客
-python -m src.main "https://example.com/article"
-```
+两种方式运行后都会得到原始素材（`output/extract_*.json` 与 `output/extract_*.md`），
+宿主 agent 读取素材并按 `prompts/` 模板生成最终成品。
 
 ## 输出说明
 
-每次运行会在 `output/` 目录生成以下文件：
+skill 每次运行在 `output/` 目录生成：
 
-1. **article_[id]_[timestamp].html** - 完整文章
-   - Medium 风格的现代设计
-   - 包含所有内容、图片和视频
-   - 如果原文是英文，显示中文翻译
+1. **extract_[id]_[timestamp].json** - 结构化提取结果
+   - URL、平台、标题、作者、发布时间、语言、媒体、正文/推文
 
-2. **summary_[id]_[timestamp].html** - 一页纸解读
-   - 顶部是一张 16:9 的 banner（内联 SVG）
-   - 正文是对原文的高度提炼和解读，1200–2500 字
-   - 不限制在一屏内，页面可滚动，排版以易读为准
-   - 包含 TL;DR、3–6 个章节、数据表格、"这意味着什么"结尾
+2. **extract_[id]_[timestamp].md** - 易读的 Markdown 素材
+   - 宿主 agent 生成内容的输入源（正文、推文串、媒体列表、元数据）
 
-3. **banner_[id].svg** - 16:9 Banner 源文件（Anthropic 风格手绘插画）
-
-4. **banner_summary_[id].png** - 一页纸 banner 区域截图（1440×810，用于分享）
-
-5. **banner_article_[id].[ext]** - 从原文提取的配图（如果原文有合适尺寸的图片）
-
-6. **metadata_[id]_[timestamp].json** - 元数据
-   - URL、标题、语言等信息
-   - 图片和视频数量统计
-
-### 关于"一页纸"
-
-"一页纸"指的是"一篇就够"的解读文章，不是把内容压缩到一屏之内。
-目标是读者读完这一篇就掌握原文全部要点，不必回头读原文。
+宿主 agent 依据素材生成的成品：
+- **完整文章 HTML** - Medium 风格的现代设计，保留全部内容与图片
+- **一页纸解读 HTML** - 现代化 Tech 主题：#F8FAFC 背景、主色 #2563EB、
+  卡片式布局、圆角与微阴影、一句话总结、亮点卡片、对比表、Callout、
+  "这意味着什么"结尾，顶部为 16:9 Banner，整体 1-3 屏/页
+- **Banner SVG / 分享图** - Anthropic 风格手绘插画（16:9）
 
 ## 环境要求
 
@@ -75,24 +75,26 @@ playwright install chromium
 
 ### 配置
 
-在 `src/config.py` 中配置：
-- LLM API 地址和密钥（用于翻译和 HTML 生成）
-- 输出目录路径
-- 浏览器设置
+- 无需也不允许在代码中配置任何 LLM 模型（地址 / 名称 / 密钥一律不硬编码）
+- 浏览器无头、输出目录等运行参数在 `src/config.py` 中配置
 
 ## 技术特点
 
 ### 智能抓取
 - **X 平台**：Playwright 优先，失败时回退到 fxtwitter JSON API
-  - JSON API 能拿到 X Article 长文全文（`article.content.blocks`）和长推文，
-    而 `og:description` 会被 X 截断到 200 字符左右
+  - JSON API 能拿到 X Article 长文全文（`article.content.blocks`）和长推文
 - **普通网页**：自动识别正文，过滤杂质
 
-### AI 驱动
-- 使用 Kimi-K2.6 模型进行翻译（服务端上下文 1M tokens）
-- 显式设置 `max_tokens`（默认 64000），避免长 HTML 被截断
-- 输出触及长度上限时会打印告警，便于定位内容不全
-- LLM 生成美观的 HTML 页面和 16:9 SVG banner
+### 解析
+- BeautifulSoup4 / trafilatura 提取正文、元数据与媒体
+- langdetect 检测语言（解析逻辑，非 LLM）
+
+### LLM 由宿主 agent 完成（prompts/）
+- `prompts/x_thread.md`：推文串整合
+- `prompts/translate.md`：翻译
+- `prompts/full_article_html.md`：完整文章 HTML
+- `prompts/summary_html.md`：一页纸解读 HTML
+- `prompts/banner_svg.md`：16:9 Banner SVG
 
 ### 容错机制
 - 遇到登录墙自动切换备用方案
@@ -107,40 +109,13 @@ playwright install chromium
 - ✅ 文档和教程网站
 - ✅ 任何包含文章内容的网页
 
-## 适用场景
-
-1. **技术学习** - 保存和整理技术文章
-2. **内容归档** - 将网页内容永久保存
-3. **知识管理** - 提炼关键信息
-4. **快速浏览** - 一页纸总结快速了解内容
-5. **语言学习** - 中英对照阅读
-
-## 示例输出
-
-### X 平台推文
-输入：`https://x.com/hwchase17/status/2085780032031760694`
-
-输出：
-- 提取推文内容："Why managed agents are the next big thing..."
-- 翻译成中文
-- 生成完整文章和一页纸总结
-
-### 技术博客
-输入：`https://www.kimi.com/blog/kimi-k3`
-
-输出：
-- 提取 17,647 字符的正文内容
-- 保留 7 张图片
-- 翻译成中文并生成精美 HTML
-
 ## 技术架构
 
 ```
+run_skill.py           # skill 根目录入口（导出 generate/run，供宿主 agent 脚本运行器调用）
 src/
-├── config.py          # 配置管理
-├── llm_client.py      # LLM API 客户端
-├── llm_services.py    # LLM 服务层（翻译、生成 HTML）
-├── main.py            # 主入口和流程编排
+├── config.py          # 配置管理（无任何 LLM 硬编码凭据）
+├── main.py            # 抓取 + 提取 + 保存素材
 ├── fetchers/          # 内容抓取器
 │   ├── x_fetcher.py          # X 平台（Playwright）
 │   ├── x_fetcher_backup.py   # X 备用方案（fxtwitter）
@@ -148,14 +123,16 @@ src/
 └── extractors/        # 内容提取器
     ├── x_extractor.py        # X 平台内容解析
     └── generic_extractor.py  # 通用网页内容解析
+prompts/               # 宿主 agent 生成内容所用的 LLM 提示词模板
+output/                # 输出素材目录（被 .gitignore 排除）
 ```
 
 ## 注意事项
 
 1. 首次运行需要下载 Chromium 浏览器（`playwright install chromium`）
-2. 需要配置有效的 LLM API 密钥
+2. 本 skill 不直连大模型，LLM 由宿主 agent 完成，无需配置任何模型
 3. 某些网站可能有反爬虫机制
-4. 生成的 HTML 文件可以直接在浏览器中打开查看
+4. 生成的素材可直接在浏览器中打开或由 agent 继续加工
 
 ## 扩展开发
 

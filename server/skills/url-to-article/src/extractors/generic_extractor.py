@@ -3,6 +3,9 @@
 from bs4 import BeautifulSoup
 import re
 from urllib.parse import urljoin, urlparse
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class GenericExtractor:
@@ -158,10 +161,21 @@ class GenericExtractor:
         
         # 处理图片 URL
         for img in content_clone.find_all('img'):
-            if img.get('src'):
-                img['src'] = urljoin(url, img['src'])
-            if img.get('data-src'):
-                img['src'] = urljoin(url, img['data-src'])
+            # 处理多种图片源属性
+            src = (
+                img.get('src') or
+                img.get('data-src') or
+                img.get('data-lazy-src') or
+                img.get('data-original')
+            )
+            if src:
+                img['src'] = urljoin(url, src)
+            elif img.get('data-srcset'):
+                # 处理data-srcset
+                srcset = img.get('data-srcset', '')
+                candidates = [item.strip().split()[0] for item in srcset.split(',') if item.strip()]
+                if candidates:
+                    img['src'] = urljoin(url, candidates[-1])
         
         # 处理链接
         for a in content_clone.find_all('a'):
@@ -213,12 +227,32 @@ class GenericExtractor:
         return best_element
     
     def _extract_images(self, soup: BeautifulSoup, url: str) -> list:
-        """提取图片列表"""
+        """提取图片列表，支持多种懒加载方式"""
         images = []
         seen = set()
-        
+
         for img in soup.find_all('img'):
-            src = img.get('src') or img.get('data-src')
+            # 尝试多种图片URL属性
+            src = (
+                img.get('src') or
+                img.get('data-src') or
+                img.get('data-lazy-src') or
+                img.get('data-original') or
+                img.get('data-srcset', '').split(',')[0].split()[0] if img.get('data-srcset') else None
+            )
+
+            # 处理srcset属性（取最大的图片）
+            if not src and img.get('srcset'):
+                srcset = img.get('srcset', '')
+                # srcset格式: "url1 1x, url2 2x" 或 "url1 100w, url2 200w"
+                candidates = []
+                for item in srcset.split(','):
+                    parts = item.strip().split()
+                    if parts:
+                        candidates.append(parts[0])
+                if candidates:
+                    src = candidates[-1]  # 取最后一个（通常是最大的）
+
             if src:
                 full_url = urljoin(url, src)
                 if full_url not in seen:
@@ -227,7 +261,7 @@ class GenericExtractor:
                         'url': full_url,
                         'alt': img.get('alt', '')
                     })
-        
+
         return images
     
     def _extract_metadata(self, soup: BeautifulSoup) -> dict:

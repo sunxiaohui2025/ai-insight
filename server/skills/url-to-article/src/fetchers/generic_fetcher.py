@@ -1,8 +1,15 @@
 """通用网页抓取器 - 支持普通网页内容获取"""
 
 import requests
-from playwright.sync_api import sync_playwright
 import time
+
+# Playwright 为可选项：静态网页优先用 requests，动态网页才需要浏览器。
+# 未安装时 _fetch_with_browser 会抛出明确错误。
+try:
+    from playwright.sync_api import sync_playwright
+    _PLAYWRIGHT_AVAILABLE = True
+except ImportError:  # pragma: no cover
+    _PLAYWRIGHT_AVAILABLE = False
 
 
 class GenericFetcher:
@@ -61,6 +68,14 @@ class GenericFetcher:
     
     def _fetch_with_browser(self, url: str) -> str:
         """使用 Playwright 浏览器抓取（适合动态网页）"""
+        if not _PLAYWRIGHT_AVAILABLE:
+            raise RuntimeError(
+                "Playwright 未安装（缺少依赖 playwright / chromium 浏览器），"
+                "无法抓取动态网页。静态网页会通过 requests 正常抓取。"
+            )
+
+        from playwright.sync_api import sync_playwright
+
         with sync_playwright() as p:
             browser = p.chromium.launch(
                 headless=self.headless,

@@ -4212,6 +4212,231 @@ def _banner_task_id(name: str) -> str:
     return name.split(".")[0]
 
 
+_SKILL_TRANSLATE_SYSTEM = (
+    "你是专业的中文科技译员。把下面的英文文章准确、流畅地翻译成中文。"
+    "保持技术术语准确，保留原文结构与格式（标题、编号、换行与段落），"
+    "不要添加评论、不要删减信息，只输出中文译文。"
+)
+
+_SKILL_SUMMARY_SYSTEM = (
+    "你是资深内容编辑。阅读下面的文章，提炼成 JSON 用于生成「一页纸解读」。"
+    "只输出 JSON，格式：{\"conclusion\": \"一句话核心结论\", "
+    "\"key_points\": [3-5 个要点], \"details\": [2-4 个技术细节亮点], "
+    "\"takeaways\": [1-2 个行动启示]}。不要输出 JSON 以外的任何内容。"
+)
+
+
+def _read_newest_extract(out_dir: Path) -> dict | None:
+    """读取最近一次技能运行保存的原始素材 extract_*.json。"""
+    matches = [p for p in out_dir.glob("extract_*.json") if p.is_file()]
+    if not matches:
+        return None
+    f = max(matches, key=lambda p: p.stat().st_mtime)
+    try:
+        data = json.loads(f.read_text(encoding="utf-8"))
+        return data if isinstance(data, dict) else None
+    except Exception:
+        return None
+
+
+def _download_skill_bytes(url: str, timeout: int = 30) -> bytes | None:
+    """尽力下载远端图片/资源字节，失败返回 None（不抛错）。"""
+    if not url:
+        return None
+    try:
+        r = httpx.get(url, timeout=timeout, follow_redirects=True,
+                      headers={"User-Agent": "Mozilla/5.0 (compatible; InSight/1.0)"})
+        if r.status_code == 200 and r.content:
+            return r.content
+    except Exception:
+        pass
+    return None
+
+
+def _localize_skill_images(images: list[str]) -> list[str]:
+    """把素材里的远端图片下载并存入本机 media，返回可直接引用的本地 URL。"""
+    local: list[str] = []
+    seen: set[str] = set()
+    for u in images or []:
+        if not u or u in seen:
+            continue
+        seen.add(u)
+        data = _download_skill_bytes(u)
+        if data:
+            m = re.search(r"\.(png|jpe?g|webp|gif)$", (urlparse(u).path or ""), re.IGNORECASE)
+            suffix = ("." + (m.group(1).lower() if m else "jpg").replace("jpeg", "jpg"))
+            try:
+                local.append(_store_media(data, suffix, "images"))
+                continue
+            except Exception:
+                pass
+        local.append(u)  # 下载失败则退回远端直链
+    return local
+
+
+def _skill_block_tag(block: str) -> str:
+    """粗略判断素材段落该渲染成 h2 / h3 / p（尽量保留原文结构）。"""
+    if re.match(r"^\d+[\.\、]\s+\S", block) and len(block) < 90:
+        return "h3"
+    if len(block) < 60 and not re.search(r"[.!?。！？:;]$", block):
+        return "h2"
+    return "p"
+
+
+def _build_skill_article_html(*, title: str, author: str, created: str,
+                              source_url: str, text: str, images: list[str]) -> str:
+    """把技能提取的原始正文组装成一篇完整、可读的中文文章 HTML（确定性兜底）。"""
+    esc = _html_escape
+    style = (
+        "body{margin:0;background:#fff;color:#24292e;font-family:-apple-system,BlinkMacSystemFont,"
+        "'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;line-height:1.8}"
+        ".wrap{max-width:760px;margin:0 auto;padding:40px 20px 72px}"
+        "h1{font-size:32px;line-height:1.3;font-weight:800;letter-spacing:-.5px;margin:0 0 14px}"
+        ".metarow{color:#6e7781;font-size:14px;display:flex;flex-wrap:wrap;gap:8px 18px;"
+        "padding-bottom:18px;border-bottom:1px solid #eaecef;margin-bottom:26px}"
+        ".metarow b{color:#57606a}.featured{width:100%;border-radius:12px;margin:4px 0 26px}"
+        "h2{font-size:24px;font-weight:700;margin:38px 0 12px}h3{font-size:19px;font-weight:600;margin:26px 0 10px}"
+        "p{margin:13px 0 0}.inline{width:100%;border-radius:10px;border:1px solid #eaecef;margin:18px 0}"
+        ".src{margin-top:34px;font-size:13px;color:#6e7781;word-break:break-all}"
+    )
+    parts = [
+        "<!DOCTYPE html><html lang='zh-CN'><head><meta charset='utf-8'>",
+        f"<meta name='viewport' content='width=device-width,initial-scale=1'><title>{esc(title)}</title>",
+        f"<style>{style}</style></head><body><div class='wrap'>",
+    ]
+    if title:
+        parts.append(f"<h1>{esc(title)}</h1>")
+    meta = []
+    if author:
+        meta.append(f"<span><b>作者</b>　{esc(author)}</span>")
+    if created:
+        meta.append(f"<span><b>发布时间</b>　{esc(created)}</span>")
+    if meta:
+        parts.append("<div class='metarow'>" + "".join(meta) + "</div>")
+    if images:
+        parts.append(f"<img class='featured' src='{esc(images[0])}' alt=''/>")
+    for raw in re.split(r"\n\s*\n", text or ""):
+        para = re.sub(r"[ \t\r]+", " ", raw).strip()
+        if not para:
+            continue
+        tag = _skill_block_tag(para)
+        parts.append(f"<{tag}>{esc(para)}</{tag}>")
+    for u in (images or [])[1:]:
+        parts.append(f"<img class='inline' src='{esc(u)}' alt=''/>")
+    if source_url:
+        parts.append(f"<p class='src'>原文链接：<a href='{esc(source_url)}'>{esc(source_url)}</a></p>")
+    parts.append("</div></body></html>")
+    return "".join(parts)
+
+
+def _build_skill_summary_html(text: str, title: str) -> str:
+    """生成一页纸解读：优先 LLM 结构化提炼，无模型时走确定性兜底。"""
+    raw = _llm_text(_SKILL_SUMMARY_SYSTEM, (text or "")[:12000], max_tokens=5000)
+    parsed = _parse_summary_json(raw)
+    if parsed:
+        return _build_summary_html(parsed)
+    return _fallback_summary_html(text or "", title)
+
+
+def _store_banner_from_url(url: str, kind: str, seen: set[str]) -> dict | None:
+    if not url or url in seen:
+        return None
+    seen.add(url)
+    data = _download_skill_bytes(url)
+    if not data:
+        return None
+    m = re.search(r"\.(png|jpe?g|webp|gif)$", (urlparse(url).path or ""), re.IGNORECASE)
+    suffix = ("." + (m.group(1).lower() if m else "jpg").replace("jpeg", "jpg"))
+    stored = _store_media(data, suffix, "images")
+    return {"url": stored, "name": f"banner_{kind}_{secrets.token_hex(4)}{suffix}", "kind": kind}
+
+
+def _build_skill_banners(ext: dict, out_dir: Path) -> list[dict]:
+    """候选 banner：优先使用技能找到的大图（本地化），其次素材正文图，最后确定性 SVG。"""
+    seen: set[str] = set()
+    banners: list[dict] = []
+    candidates: list[str] = []
+
+    li = ext.get("large_image")
+    if isinstance(li, dict) and li.get("url"):
+        candidates.append(li["url"])
+    bdir = out_dir / "banners"
+    if bdir.is_dir():
+        for p in sorted(bdir.glob("*_banner_image.json")):
+            try:
+                obj = json.loads(p.read_text(encoding="utf-8"))
+                if isinstance(obj, dict) and obj.get("url"):
+                    candidates.append(obj["url"])
+            except Exception:
+                pass
+    for u in ((ext.get("media") or {}).get("images") or []):
+        candidates.append(u)
+
+    kinds = ("article", "summary")
+    for i, u in enumerate(candidates):
+        if len(banners) >= 2:
+            break
+        b = _store_banner_from_url(u, kinds[i] if i < 2 else "article", seen)
+        if b:
+            banners.append(b)
+
+    if not banners:
+        title = (ext.get("metadata") or {}).get("title") or "Article"
+        svg = _fallback_banner_svg(title, "", "#2563EB").encode("utf-8")
+        stored = _store_media(svg, ".svg", "images")
+        banners.append({"url": stored, "name": "banner_article_placeholder.svg", "kind": "article"})
+    return banners
+
+
+def _assemble_skill_result(ext: dict, out_dir: Path) -> dict | None:
+    """宿主 agent 兜底：把 skill 的原始素材生成正文/一页纸/元数据/banner。
+
+    有配置模型时英文自动翻译、一页纸走 LLM 结构化；无模型则用原文 + 确定性兜底，
+    保证「网页链接」发布流程不再因缺少成品文件而失败。
+    """
+    if not isinstance(ext, dict):
+        return None
+    meta = ext.get("metadata") or {}
+    full_text = (ext.get("full_text") or "").strip()
+    if not full_text:
+        return None
+    lang = (meta.get("language") or ext.get("language") or "").lower()
+    title = (meta.get("title") or "").strip() or (ext.get("title") or "")
+    source_url = urlparse(meta.get("url") or ext.get("url") or "")
+    images = _localize_skill_images((ext.get("media") or {}).get("images") or [])
+
+    translated = False
+    text = full_text
+    if lang.startswith("en"):
+        trans = _llm_text(_SKILL_TRANSLATE_SYSTEM, full_text, max_tokens=8000)
+        if (trans or "").strip():
+            text = trans.strip()
+            translated = True
+
+    content_html = _build_skill_article_html(
+        title=title,
+        author=(meta.get("author") or ""),
+        created=(meta.get("created_at") or meta.get("published_time") or ""),
+        source_url=source_url.geturl() if hasattr(source_url, "geturl") else "",
+        text=text,
+        images=images,
+    )
+    summary_html = _build_skill_summary_html(text, title)
+    banners = _build_skill_banners(ext, out_dir)
+
+    return {
+        "content_html": content_html,
+        "summary_html": summary_html,
+        "metadata": {
+            "title": title,
+            "language": lang,
+            "translated": translated,
+            "image_count": len((ext.get("media") or {}).get("images") or []),
+        },
+        "banners": banners,
+    }
+
+
 def _read_newest_skill_outputs(skill_dir: Path) -> dict:
     """收集该技能最近一次运行的输出：正文 HTML、一页纸 HTML、候选 banner。"""
     out_dir = skill_dir / "output"
@@ -4270,6 +4495,16 @@ def _read_newest_skill_outputs(skill_dir: Path) -> dict:
             results["banners"].append({"url": url, "name": p.name, "kind": kind})
         except Exception:
             continue
+
+    # 兜底：技能只产出 extract_*.json 原始素材（最新版 url-to-article 不再直接产出
+    # article_*.html / summary_*.html / metadata / banner 成品），此时由宿主（后端）
+    # 用服务端配置的模型生成正文、一页纸与 banner，保证发布流程不因缺少成品而失败。
+    if not results["content_html"]:
+        ext = _read_newest_extract(out_dir)
+        if ext:
+            built = _assemble_skill_result(ext, out_dir)
+            if built:
+                results = built
     return results
 
 

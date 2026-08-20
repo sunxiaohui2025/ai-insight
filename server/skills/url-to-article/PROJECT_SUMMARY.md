@@ -25,7 +25,7 @@ URL 转文章提取器 - X 平台专用版
 3. ✅ **自动翻译**
    - 检测内容语言
    - 英文内容自动翻译成中文
-   - 调用 Kimi-K2.6 模型进行高质量翻译
+   - 调用 LLM 进行高质量翻译
 
 4. ✅ **双重 HTML 生成**
    - **完整文章 HTML**: Medium 风格，包含所有内容
@@ -47,9 +47,8 @@ src/
 │   └── x_fetcher_backup.py # 备用抓取器（fxtwitter）
 ├── extractors/
 │   └── x_extractor.py    # 内容提取器
-├── llm_client.py         # Kimi API 客户端
-├── llm_services.py       # LLM 服务层
-└── main.py               # 主入口和流程编排
+└── main.py               # 主入口：抓取 + 提取 + 保存素材
+prompts/                  # 宿主 agent 生成内容所用的 LLM 提示词模板
 ```
 
 ### 数据流
@@ -69,14 +68,14 @@ URL 输入
   ↓
 4. 语言检测与翻译
    - 检测语言（langdetect）
-   - 英文内容调用 Kimi 翻译
+   - 英文内容调用 LLM 翻译
   ↓
 5. 生成完整文章 HTML
-   - 调用 Kimi 生成美观 HTML
+   - 调用 LLM 生成美观 HTML
    - 保留所有原文内容
   ↓
 6. 生成一页纸总结 HTML
-   - 调用 Kimi 提炼核心观点
+   - 调用 LLM 提炼核心观点
    - 紧凑的卡片式设计
   ↓
 7. 保存文件
@@ -160,10 +159,7 @@ trafilatura>=1.6.0
 ```
 
 ### 外部服务
-- Kimi-K2.6 API (本地部署)
-  - API Base: http://1.181.141.96:6018/kimi-k2.6/v1/chat/completions
-  - Model: Kimi-K2.6
-  - API Key: 123
+- LLM：由宿主 agent / 环境变量注入（不硬编码地址、模型与密钥）
 
 ## 使用示例
 
@@ -211,24 +207,27 @@ print(result['saved_files'])
 ## 项目文件清单
 
 ```
-explain-url-to-article/
+url-to-article/
 ├── src/
 │   ├── __init__.py
 │   ├── config.py
-│   ├── llm_client.py
-│   ├── llm_services.py
 │   ├── main.py
 │   ├── fetchers/
 │   │   ├── __init__.py
 │   │   ├── x_fetcher.py
-│   │   └── x_fetcher_backup.py
+│   │   ├── x_fetcher_backup.py
+│   │   └── generic_fetcher.py
 │   └── extractors/
 │       ├── __init__.py
-│       └── x_extractor.py
-├── output/
-│   ├── article_*.html
-│   ├── summary_*.html
-│   └── metadata_*.json
+│       ├── x_extractor.py
+│       └── generic_extractor.py
+├── prompts/
+│   ├── x_thread.md
+│   ├── translate.md
+│   ├── full_article_html.md
+│   ├── summary_html.md
+│   └── banner_svg.md
+├── output/                # 提取素材（extract_*.json / *.md）
 ├── requirements.txt
 ├── README.md
 ├── PROJECT_SUMMARY.md

@@ -15,7 +15,7 @@
 |------|------|------|
 | X 平台内容抓取 | ✅ | Playwright + fxtwitter 备用方案 |
 | 智能内容提取 | ✅ | 自动去除杂质，保留核心内容 |
-| 自动翻译 | ✅ | 英文→中文，使用 Kimi-K2.6 |
+| 自动翻译 | ✅ | 英文→中文，使用 LLM |
 | 完整文章 HTML | ✅ | Medium 风格，包含所有内容 |
 | 一页纸总结 HTML | ✅ | 提炼核心观点，紧凑设计 |
 | 媒体资源保留 | ✅ | 图片和视频链接 |
@@ -81,21 +81,22 @@ output/
 ### 模块组成
 ```
 src/
-├── config.py              # 配置管理
-├── llm_client.py         # Kimi API 客户端
-├── llm_services.py       # LLM 服务层
-├── main.py               # 主流程编排
+├── config.py              # 配置管理（无 LLM 硬编码凭据）
+├── main.py               # 主入口：抓取 + 提取 + 保存素材
 ├── fetchers/
 │   ├── x_fetcher.py      # Playwright 抓取
-│   └── x_fetcher_backup.py # 备用抓取
+│   ├── x_fetcher_backup.py # 备用抓取
+│   └── generic_fetcher.py # 通用网页
 └── extractors/
-    └── x_extractor.py    # 内容提取
+    ├── x_extractor.py    # X 内容提取
+    └── generic_extractor.py # 通用网页提取
+prompts/                  # 宿主 agent 生成内容所用的 LLM 提示词模板
 ```
 
 ### 技术栈
 - **抓取**: Playwright 1.40+ / fxtwitter 备用
 - **解析**: BeautifulSoup4, lxml
-- **LLM**: Kimi-K2.6 (本地部署)
+- **LLM**: 由宿主 agent / 环境变量注入（不硬编码模型）
 - **语言检测**: langdetect
 - **Python**: 3.8+
 
@@ -216,7 +217,7 @@ result = extractor.process_url(url="...", save_to_file=True)
 |------|------|
 | 平均处理时间 | 10-30 秒 |
 | 成功率 | 95%+ (有备用方案) |
-| 翻译质量 | 优秀 (Kimi-K2.6) |
+| 翻译质量 | 优秀（LLM） |
 | HTML 美观度 | ⭐⭐⭐⭐⭐ |
 | 代码质量 | 模块化、可维护 |
 
@@ -267,7 +268,7 @@ result = extractor.process_url(url="...", save_to_file=True)
 感谢以下技术和服务：
 - **Playwright**: 强大的浏览器自动化工具
 - **fxtwitter**: 可靠的 X 内容备用服务
-- **Kimi-K2.6**: 高质量的本地 LLM 服务
+- **LLM**: 高质量内容生成（由宿主 agent / 环境变量注入）
 - **BeautifulSoup**: 优秀的 HTML 解析库
 
 ---

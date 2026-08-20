@@ -2,7 +2,9 @@
 from bs4 import BeautifulSoup
 import re
 from typing import Dict, List
-import langdetect
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class XExtractor:
@@ -30,13 +32,11 @@ class XExtractor:
         
         # 合并所有推文文本
         full_text = "\n\n".join([t["text"] for t in tweets if t["text"]])
-        
-        # 检测语言
-        try:
-            language = langdetect.detect(full_text) if full_text else "unknown"
-        except:
-            language = "unknown"
-        
+
+        # 检测语言 - 使用统一的语言检测工具
+        from src.utils.language_utils import detect_language
+        language = detect_language(full_text, default="unknown")
+
         return {
             "tweets": tweets,
             "full_text": full_text,

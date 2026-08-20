@@ -1,0 +1,30 @@
+# --- Secrets / local env ---
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# --- Skill runtime artifacts ---
+output/
+debug_page.html
+*.html
+*.svg
+*.png
+
+# --- OS / editor ---
+.DS_Store
+.idea/
+.vscode/*
+!.vscode/extensions.json
+
+# --- Local / machine-specific settings ---
+.claude/settings.local.json

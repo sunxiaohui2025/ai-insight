@@ -37,6 +37,7 @@ __pycache__/
 *.pyc
 
 # skill 生成产物与本地配置
+server/skills/
 server/skills/**/output/
 server/skills/**/.claude/
 server/skills/**/*_backup.py
