@@ -89,7 +89,7 @@ playwright install chromium
 - **普通网页**：自动识别正文，过滤杂质
 
 ### AI 驱动
-- 使用 your-model 模型进行翻译（服务端上下文 1M tokens）
+- 使用 Kimi-K2.6 模型进行翻译（服务端上下文 1M tokens）
 - 显式设置 `max_tokens`（默认 64000），避免长 HTML 被截断
 - 输出触及长度上限时会打印告警，便于定位内容不全
 - LLM 生成美观的 HTML 页面和 16:9 SVG banner

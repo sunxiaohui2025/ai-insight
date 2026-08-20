@@ -109,7 +109,7 @@ Token stored in Keychain with service `com.sun.insight.cloud`, account `token`.
 
 ## Server (`server/`)
 
-Single-file FastAPI app (`app/main.py`) + SQLite. No ORM — raw sqlite3. The admin console and frontend are provided by the React web app (`web/`), not embedded in the server.
+Single-file FastAPI app (`app/main.py`) + SQLite. No ORM — raw sqlite3. Admin console HTML is embedded as a raw Python string (`ADMIN_HTML`).
 
 ### Environment variables (`INSIGHT_*` prefix)
 
@@ -122,7 +122,7 @@ Code uses the `INSIGHT_*` prefix (shown in `.env.example`). Note: **port and wor
 | `INSIGHT_ADMIN_PASSWORD` | — | Admin password (scrypt hashed at bootstrap) |
 | `INSIGHT_DATABASE` | `server/insight.db` | SQLite file path |
 | `INSIGHT_LLM_BASE_URL` | `http://127.0.0.1:6018` | vLLM / OpenAI-compatible base URL |
-| `INSIGHT_LLM_MODEL` | `your-model` | Model name |
+| `INSIGHT_LLM_MODEL` | `qwen3.5-397b-a17b` | Model name |
 | `INSIGHT_LLM_API_KEY` | — | API key (server-side only, never sent to clients) |
 | `INSIGHT_PUBLIC_URL` | — | Public-facing URL (for CORS/docs) |
 | `INSIGHT_SKILLS_PATH` | `server/data/skills` | Skills storage dir |

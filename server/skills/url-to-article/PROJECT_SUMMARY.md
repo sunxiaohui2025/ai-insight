@@ -25,7 +25,7 @@ URL 转文章提取器 - X 平台专用版
 3. ✅ **自动翻译**
    - 检测内容语言
    - 英文内容自动翻译成中文
-   - 调用 your-model 模型进行高质量翻译
+   - 调用 Kimi-K2.6 模型进行高质量翻译
 
 4. ✅ **双重 HTML 生成**
    - **完整文章 HTML**: Medium 风格，包含所有内容
@@ -160,9 +160,9 @@ trafilatura>=1.6.0
 ```
 
 ### 外部服务
-- your-model API (本地部署)
-  - API Base: http://your-llm-server:port/v1/chat/completions
-  - Model: your-model
+- Kimi-K2.6 API (本地部署)
+  - API Base: http://1.181.141.96:6018/kimi-k2.6/v1/chat/completions
+  - Model: Kimi-K2.6
   - API Key: 123
 
 ## 使用示例

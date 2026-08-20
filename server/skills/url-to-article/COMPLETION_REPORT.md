@@ -15,7 +15,7 @@
 |------|------|------|
 | X 平台内容抓取 | ✅ | Playwright + fxtwitter 备用方案 |
 | 智能内容提取 | ✅ | 自动去除杂质，保留核心内容 |
-| 自动翻译 | ✅ | 英文→中文，使用 your-model |
+| 自动翻译 | ✅ | 英文→中文，使用 Kimi-K2.6 |
 | 完整文章 HTML | ✅ | Medium 风格，包含所有内容 |
 | 一页纸总结 HTML | ✅ | 提炼核心观点，紧凑设计 |
 | 媒体资源保留 | ✅ | 图片和视频链接 |
@@ -95,7 +95,7 @@ src/
 ### 技术栈
 - **抓取**: Playwright 1.40+ / fxtwitter 备用
 - **解析**: BeautifulSoup4, lxml
-- **LLM**: your-model (本地部署)
+- **LLM**: Kimi-K2.6 (本地部署)
 - **语言检测**: langdetect
 - **Python**: 3.8+
 
@@ -216,7 +216,7 @@ result = extractor.process_url(url="...", save_to_file=True)
 |------|------|
 | 平均处理时间 | 10-30 秒 |
 | 成功率 | 95%+ (有备用方案) |
-| 翻译质量 | 优秀 (your-model) |
+| 翻译质量 | 优秀 (Kimi-K2.6) |
 | HTML 美观度 | ⭐⭐⭐⭐⭐ |
 | 代码质量 | 模块化、可维护 |
 
@@ -267,7 +267,7 @@ result = extractor.process_url(url="...", save_to_file=True)
 感谢以下技术和服务：
 - **Playwright**: 强大的浏览器自动化工具
 - **fxtwitter**: 可靠的 X 内容备用服务
-- **your-model**: 高质量的本地 LLM 服务
+- **Kimi-K2.6**: 高质量的本地 LLM 服务
 - **BeautifulSoup**: 优秀的 HTML 解析库
 
 ---

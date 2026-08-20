@@ -20,11 +20,11 @@
   ↓
 提取内容 (BeautifulSoup)
   ↓
-检测语言 & 翻译 (your-model)
+检测语言 & 翻译 (Kimi-K2.6)
   ↓
-生成完整文章 HTML (your-model)
+生成完整文章 HTML (Kimi-K2.6)
   ↓
-生成一页纸总结 HTML (your-model)
+生成一页纸总结 HTML (Kimi-K2.6)
   ↓
 保存到本地文件
 ```
@@ -33,7 +33,7 @@
 
 - **抓取**: Playwright (浏览器自动化) + fxtwitter/vxtwitter (备用)
 - **解析**: BeautifulSoup4, lxml, trafilatura
-- **LLM**: your-model (本地部署)
+- **LLM**: Kimi-K2.6 (本地部署)
 - **语言检测**: langdetect
 
 ## 安装
@@ -100,9 +100,9 @@ output/
 ```python
 class Config:
     # LLM 配置
-    KIMI_API_BASE = "http://your-llm-server:port/v1/chat/completions"
-    KIMI_MODEL = "your-model"
-    KIMI_API_KEY = "your-api-key"
+    KIMI_API_BASE = "http://1.181.141.96:6018/kimi-k2.6/v1/chat/completions"
+    KIMI_MODEL = "Kimi-K2.6"
+    KIMI_API_KEY = "123"
     
     # X 平台配置
     X_HEADLESS = False  # True=无头模式, False=显示浏览器
@@ -125,12 +125,12 @@ class Config:
 
 ### 3. 内容处理
 - 检测语言（英文/中文等）
-- 如果是英文，调用 your-model 翻译成中文
+- 如果是英文，调用 Kimi-K2.6 翻译成中文
 - 整合推文串（如果有多条）
 
 ### 4. HTML 生成
-- 调用 your-model 生成美观的完整文章 HTML
-- 调用 your-model 生成一页纸总结 HTML
+- 调用 Kimi-K2.6 生成美观的完整文章 HTML
+- 调用 Kimi-K2.6 生成一页纸总结 HTML
 - 保存到本地文件
 
 ## 测试示例

@@ -3,10 +3,10 @@ import os
 from pathlib import Path
 
 class Config:
-    # LLM 配置（通过环境变量注入，避免提交真实地址与密钥）
-    KIMI_API_BASE = os.getenv("KIMI_API_BASE", "http://your-llm-server:port/v1/chat/completions")
-    KIMI_MODEL = os.getenv("KIMI_MODEL", "your-model")
-    KIMI_API_KEY = os.getenv("KIMI_API_KEY", "")
+    # LLM 配置
+    KIMI_API_BASE = "http://1.181.141.96:6018/kimi-k2.6/v1/chat/completions"
+    KIMI_MODEL = "Kimi-K2.6"
+    KIMI_API_KEY = "123"
 
     # 上下文与输出长度
     # 服务端 max_model_len = 1048576（1M），这里不再对输入做截断
