@@ -18,5 +18,5 @@ COPY --from=web-builder /web/build ./web_build
 ENV INSIGHT_DATABASE=/data/insight.db
 ENV INSIGHT_WEB_BUILD=/app/web_build
 VOLUME ["/data"]
-EXPOSE 8000
-CMD uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000} --proxy-headers
+EXPOSE 8080
+CMD uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8080} --proxy-headers
