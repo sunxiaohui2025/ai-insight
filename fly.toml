@@ -1,0 +1,39 @@
+# fly.toml — Fly.io 部署配置
+# 对应根目录 Dockerfile（同一镜像内构建前端 + 后端）
+app = "ai-insight"
+
+[build]
+  dockerfile = "Dockerfile"
+
+# 给后端用的非敏感环境变量（敏感项请用 `fly secrets set` 设置，见下方说明）
+[env]
+  INSIGHT_DATABASE = "/data/insight.db"
+  INSIGHT_WEB_BUILD = "/app/web_build"
+  INSIGHT_LLM_BASE_URL = "http://1.181.141.96:6018"
+  INSIGHT_LLM_MODEL = "qwen3.5-397b-a17b"
+  INSIGHT_PUBLIC_URL = "https://ai-insight.fly.dev"
+
+[http_service]
+  internal_port = 8080          # 必须与 Dockerfile 中 uvicorn 监听端口一致
+  force_https = true
+  auto_stop_machines = "stop"
+  auto_start_machines = true
+
+  [http_service.concurrency]
+    type = "requests"
+    hard_limit = 20
+    soft_limit = 10
+
+  # 健康检查指向已有的 /health 接口
+  [[http_service.checks]]
+    grace_period = "30s"
+    interval = "15s"
+    timeout = "5s"
+    method = "GET"
+    path = "/health"
+
+# 持久化 SQLite 数据库：/data 目录（Dockerfile 里 INSIGHT_DATABASE 指向这里）
+# 首次部署前需执行: fly volumes create insight_data --size 1 --region <region>
+[[mounts]]
+  source = "insight_data"
+  destination = "/data"
